@@ -69,6 +69,7 @@ const Signup = () => {
                 onClick={submitHandler}>
                     Signup
                 </Button>
+                <Link to="/login">Already have an Account?</Link>
                 
 
             </Stack>
