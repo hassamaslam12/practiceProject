@@ -1,4 +1,5 @@
 import { child, get, getDatabase, push, ref, remove, set } from "firebase/database";
+import { createUserWithEmailAndPassword, getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, updatePassword } from "firebase/auth";
 import app from "./Firebaseconfig";
 import Modal from '@mui/material/Modal';
 import { Box, Typography } from "@mui/material";
@@ -64,11 +65,93 @@ const delRecord  = (nodeName:string) => {
   )
   }
 
+  const auth = getAuth(app)
 
+const signinVerification = (email:string,password:string,name:string) =>{
+    return new Promise((resolve, reject) =>{
+
+        createUserWithEmailAndPassword(auth,email,password)
+        .then((res:any)=>{
+            resolve("success")
+            console.log(res);
+            writeData(`users/${res.user.uid}`,{name:name,email:email})
+        })
+        .catch(()=>reject("error"))
+    })
+}
+
+const loginVerification = (email:string,password:string) =>{
+    return new Promise((resolve, reject) =>{
+
+        signInWithEmailAndPassword(auth, email, password)
+        .then((userCredential) => {
+            const user = userCredential.user;
+            resolve("success")
+        })
+        .catch((error) => {
+            const errorCode = error.code;
+            const errorMessage = error.message;
+            reject(errorMessage)
+        });
+        })
+
+}
+
+
+const alreadySignedIn:()=>any = () =>{
+    return new Promise((resolve, reject)=>{
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+              
+              const uid = user.uid;
+                resolve( uid)
+            } else {
+                reject(0)
+            }
+    
+    }
+    )
+    })
+
+}
+
+
+    const logout = ()=>{
+
+        return new Promise((resolve, reject) => {
+
+            signOut(auth).then(() => {
+                resolve("done")
+            }).catch((error) => {
+                reject(error)
+            });
+        })
+          
+    }
+
+
+
+    const editPassword =(newPassword:string)=>{
+        const user:any = auth.currentUser;
+
+updatePassword(user, newPassword).then(() => {
+    alert("Password Changed")    
+}).catch((error) => {
+  alert("error")
+  console.log(error);
+  
+});
+    }
 
 
 export {
     writeData,
     getDatafromFirebase,
-    delRecord
+    delRecord,
+    signinVerification,
+    loginVerification,
+    alreadySignedIn,
+    logout,
+    editPassword
 }

@@ -34,6 +34,9 @@ import AllSubjects from '../Screens/Subject/AllSubjects';
 import AddSyllabus from '../Screens/Syllabus/AddSyllabus';
 import AllSyllabus from '../Screens/Syllabus/AllSyllabus';
 import SingleSyllabus from '../Screens/Syllabus/SingleSyllabus';
+import Protected from '../config/Protected';
+import { Button } from '@mui/material';
+import { logout } from '../Firebase/FirebaseMethods';
 
 const drawerWidth = 240;
 
@@ -47,6 +50,27 @@ interface Props {
 
 export default function Dashboard(props: Props) {
   const navigate = useNavigate();
+
+
+  const signUpNavigationHandler=()=>{
+    navigate("/signup")
+  }
+  const logInNavigationHandler=()=>{
+    navigate("/login")
+  }
+
+  const logoutHandler=()=>{
+    logout().then(()=>{
+      navigate("/login")
+    }).catch(()=>{
+      alert("Could not log out")
+    })
+  }
+
+const resetPassHandler=()=>{
+  navigate("/newPass")
+}
+
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const [isClosing, setIsClosing] = React.useState(false);
@@ -188,6 +212,10 @@ export default function Dashboard(props: Props) {
       <Toolbar />
       <Divider />
         <SelectedTreeView drawerItems ={drawerItems}/>
+
+        <Button variant='contained' onClick={logoutHandler}>Logout</Button>
+        <Button variant='contained' onClick={resetPassHandler}>reset password</Button>
+
       <Divider />
      
     </div>
